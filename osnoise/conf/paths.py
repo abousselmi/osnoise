@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# From nova/conf/paths.py
+# Based on nova/conf/paths.py
 import os
 import sys
 
