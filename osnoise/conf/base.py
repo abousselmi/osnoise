@@ -28,6 +28,12 @@ base_options = [
         'log_level',
         default='info',
         help='Log level.'),
+
+    cfg.StrOpt(
+        'log_file',
+        default='/var/log/osnoise/osnoise.log',
+        help='Log file'),
+
     cfg.IntOpt(
         'log_maxBytes',
         default=1000000,
@@ -38,6 +44,11 @@ base_options = [
         default=5,
         min=1,
         help='Log level.'),
+    cfg.BoolOpt('log_config_append',
+                default=False,
+                deprecated_group='DEFAULT',
+                help='To append logs to existent log file or not.'),
+
 ]
 
 

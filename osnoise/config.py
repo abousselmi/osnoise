@@ -19,14 +19,19 @@
 
 import os
 import logging as py_logging
+from oslo_log import log as os_logging
 import logging.handlers
 from osnoise import conf
-import osnoise.messaging
+
 
 ENV_CONFIG_DIR_VAR = 'OSNOISE_PLACEMENT_CONFIG_DIR'
 DEFAULT_CONFIG_DIR = '~' #for test only!!! Need to be changed; may be not
 CONFIG_FILE = 'osnoise.conf'
 
+PRODUCT_NAME = 'OSNoise'
+
+_AUDIT = logging.INFO + 1
+_TRACE = 5
 
 CONF = conf.CONF
 
@@ -44,7 +49,7 @@ def _get_config_file(env=None):
     return os.path.join(dirname, CONFIG_FILE)
 
 
-def _init_logger(config):
+def _init_logger(conf):
     # initialize the logging system
     LOG = py_logging.getLogger('osnoise')
 
@@ -54,13 +59,14 @@ def _init_logger(config):
                   'error': py_logging.ERROR,
                   'critical': py_logging.CRITICAL,
                   }
-    log_level = LOG_LEVELS.get(config.log_level, py_logging.NOTSET)
+    log_level = LOG_LEVELS.get(conf.log_level, py_logging.NOTSET)
     LOG.setLevel(log_level)
-    log_handler=py_logging.handlers.RotatingFileHandler(config.log_dir +
-                                                        config.log_file_name,
-                                                        config.log_maxBytes,
-                                                        config.log_backupCount,
-                                                        )
+
+    log_handler = ColorRotatingFileHandler(conf.log_dir +
+                                           conf.log_file_name,
+                                           conf.log_maxBytes,
+                                           conf.log_backupCount,
+                                           )
     log_formatter = py_logging.Formatter('%(asctime)s - '
                                          '%(levelname)s '
                                          '[%(name)s] '
@@ -75,11 +81,26 @@ def _init_logger(config):
 
     LOG.debug('logging system is up.')
 
+class ColorRotatingFileHandler(logging.handlers.RotatingFileHandler):
+
+    LEVEL_COLORS = {
+        _AUDIT: '\033[01;36m',  # BOLD CYAN
+        _TRACE: '\033[00;35m',  # MAGENTA
+        logging.DEBUG: '\033[00;32m',  # GREEN
+        logging.INFO: '\033[00;36m',  # CYAN
+        logging.WARN: '\033[01;33m',  # BOLD YELLOW
+        logging.ERROR: '\033[01;31m',  # BOLD RED
+        logging.CRITICAL: '\033[01;31m',  # BOLD RED
+    }
+
+    def format(self, record):
+        record.color = self.LEVEL_COLORS[record.levelno]
+        return logging.StreamHandler.format(self, record)
+
 
 def init_config():
     # initialize the config system
     conf_file = _get_config_file()
     _parse_args(default_config_files=[conf_file])
     _init_logger(CONF)
-    osnoise.messaging.init_messaging(CONF)
     return CONF

@@ -15,7 +15,7 @@
 from oslo_config import cfg
 
 from osnoise.conf import base
-from osnoise.conf import compute
+from osnoise.conf import dummy
 from osnoise.conf import paths
 from osnoise.conf import rabbit
 
@@ -24,6 +24,6 @@ CONF = cfg.CONF
 
 
 base.register_opts(CONF)
-compute.register_opts(CONF)
+dummy.register_opts(CONF)
 rabbit.register_opts(CONF)
 paths.register_opts(CONF)

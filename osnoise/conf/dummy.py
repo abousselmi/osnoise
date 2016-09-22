@@ -14,7 +14,7 @@
 
 from oslo_config import cfg
 
-compute_agents_section = cfg.OptGroup('agents_messaging',
+dummy_section = cfg.OptGroup('dummy_conf',
                                       title='OpenStack compute agents\' '
                                             'messaging options',
                                       help='Configuration options of '
@@ -22,39 +22,49 @@ compute_agents_section = cfg.OptGroup('agents_messaging',
                                            'flows.')
 
 
-compute_agents_options = [
+dummy_options = [
+    #exchange general properties
     cfg.StrOpt(
-        'nova_cpu_xname',
+        'exchange_name',
         default='reply_q',
-        help='Nova cpu agent reply exchange name.'),
+        help='Agent reply exchange name.'),
     cfg.StrOpt(
-        'nova_cpu_xtype',
+        'exchange_type',
         default='direct',
-        help='Nova cpu agent reply exchange type.'),
+        help='Agent reply exchange type.'),
+
+    #exchange specific properties
+    cfg.BoolOpt(
+        'is_passive',
+        default=False,
+        help='Exchange passive property.'),
+    cfg.BoolOpt(
+        'is_durable',
+        default=False,
+        help='Exchange durable property.'),
+    cfg.BoolOpt(
+        'is_auto_delete',
+        default=False,
+        help='Exchange auto-delete property.'),
+    cfg.BoolOpt(
+        'is_internal',
+        default=False,
+        help='Exchange internal property.'),
+    cfg.ListOpt(
+        'arguments',
+        default=[],
+        help='Exchange arguments.'),
+
+    #message properties
     cfg.StrOpt(
-        'nova_cpu_xrk',
+        'routing_key',
         default='reply_q',
-        help='Nova cpu agent reply exchange routing key.'),
+        help='Agent reply exchange routing key.'),
     cfg.StrOpt(
-        'nova_cpu_message_payload',
+        'message_payload',
         default='payload',
-        help='Nova cpu agent reply message payload.'),
-    cfg.StrOpt(
-        'neutron_l2agt_xname',
-        default='reply_q',
-        help='Neutron L2 agent reply exchange name.'),
-    cfg.StrOpt(
-        'neutron_l2agt_xtype',
-        default='direct',
-        help='Neutron L2 agent reply exchange type.'),
-    cfg.StrOpt(
-        'neutron_l2agt_xrk',
-        default='reply_q',
-        help='Neutron L2 agent reply exchange routing key.'),
-    cfg.StrOpt(
-        'neutron_l2agt_message_payload',
-        default='payload',
-        help='Neutron L2 agent reply message payload.'),
+        help='Agent reply message payload.'),
+
 
     # Message type property is mendatory. Without it,
     # rpc_common.deserialize_msg will raise a ValueError exception
@@ -79,9 +89,9 @@ compute_agents_options = [
 
 
 def register_opts(conf):
-    conf.register_group(compute_agents_section)
-    conf.register_opts(compute_agents_options, group=compute_agents_section)
+    conf.register_group(dummy_section)
+    conf.register_opts(dummy_options, group=dummy_section)
 
 
 def list_opts():
-    return {compute_agents_section : compute_agents_options}
+    return {dummy_section : dummy_options}
