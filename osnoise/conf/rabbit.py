@@ -63,7 +63,7 @@ rabbit_options = [
                default=1,
                help='Maximum number of channels.'),
     cfg.IntOpt('pika_frame_max',
-               default=1,
+               default=131072,
                help='Maximum byte size for an AMQP frame.'),
     #rabbit config
     cfg.IntOpt('heartbeat_rate',
@@ -79,7 +79,7 @@ rabbit_options = [
                 help = 'Connect over SSL for RabbitMQ.'),
     #rabbit config
     cfg.IntOpt('rabbit_max_retries',
-               default=0,
+               default=None,
                deprecated_for_removal=True,
                deprecated_group='DEFAULT',
                help='Maximum number of RabbitMQ connection retries. '

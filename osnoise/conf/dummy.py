@@ -52,7 +52,7 @@ dummy_options = [
         help='Exchange internal property.'),
     cfg.ListOpt(
         'arguments',
-        default=[],
+        default=None,
         help='Exchange arguments.'),
 
     #message properties
@@ -65,6 +65,15 @@ dummy_options = [
         default='payload',
         help='Agent reply message payload.'),
 
+    #publisher properties
+    cfg.FloatOpt(
+        'publish_rate',
+        default=2,
+        help='Publish rate per second.'),
+    cfg.IntOpt(
+        'duration',
+        default=60,
+        help='Publishing duration in seconds.'),
 
     # Message type property is mendatory. Without it,
     # rpc_common.deserialize_msg will raise a ValueError exception

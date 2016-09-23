@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # Copyright 2016 Orange
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,20 +14,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#!/usr/bin/env python
-
 import osnoise.config as config
 import osnoise.logger as logging
 import osnoise.messaging as messaging
 
 if __name__ == "__main__":
-    CONF = config.init_config()
-
-    LOG = logging.getLogger(__name__)
-    LOG.info('log debug from main.')
-    #
-    # print 'dir2: %s' % CONF.log_dir
-    # print 'l2 x type2: %s' % CONF.dummy_conf.exchange_name
-
-    print 'rabbit_port: %s' %CONF.rabbit_conf.rabbit_port
-    publisher = messaging.BasicPublisher(CONF)
+    try:
+        CONF = config.init_config()
+        LOG = logging.getLogger(__name__)
+        LOG.info('Starting..')
+        print 'Starting..'
+        publisher = messaging.BasicPublisher(CONF)
+        publisher.start_publishing()
+    except KeyboardInterrupt:
+        LOG.info('Program interrupted by user. Stopping..')
+        print 'Program interrupted by user.'
+        print 'Stopping..'
+        publisher.close_connection()
