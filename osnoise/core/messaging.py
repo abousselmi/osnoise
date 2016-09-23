@@ -12,23 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import time
+
 import pika
 import pika.credentials as pika_credentials
 import pika.spec
-import time
-from threading import Thread
 
+import osnoise.common.config as cfg
+import osnoise.common.logger as logging
 import osnoise.conf
-import osnoise.config as cfg
-import osnoise.logger as logging
-
 
 CONF = osnoise.conf.CONF
 LOG = logging.getLogger(__name__)
 
 
-class BasicPublisher(object):
-    """The publisher class of dummy messages"""
+class BasicMessaging(object):
+    """Configures a rabbitmq client to publish dummy messages"""
 
     def __init__(self, conf):
         # rabbitmq config options
@@ -87,9 +86,9 @@ class BasicPublisher(object):
         )
 
         #init connection
-        self._init_connection()
+        self._init_messaging()
 
-    def _init_connection(self):
+    def _init_messaging(self):
         LOG.debug('Initializing connection to rabbitmq node.')
         #construct credentials
         credentials = pika_credentials.PlainCredentials(
@@ -120,40 +119,31 @@ class BasicPublisher(object):
                                       arguments=self.arguments
                                       )
 
+    def get_duration(self):
+        return self.noise_dureation
 
-    def start_publishing(self):
-        LOG.debug('Start publishing very noisy messages :D.')
-        if self.noise_dureation != 0:
-            t_end = time.time() + self.noise_dureation
-            while time.time() < t_end:
-                self.channel.basic_publish(exchange=self.exchange_name,
-                                           routing_key=self.routing_key,
-                                           body=self.message_payload,
-                                           properties=self.properties)
-                time.sleep(1)
-                LOG.debug('Publishing message: %s' %self.message_payload)
-        else:
-            try:
-                while True:
-                    self.channel.basic_publish(exchange=self.exchange_name,
-                                               routing_key=self.routing_key,
-                                               body=self.message_payload,
-                                               properties=self.properties)
-                    time.sleep(1)
-                    LOG.debug('Publishing message: %s' % self.message_payload)
-            except KeyboardInterrupt:
-                LOG.debug('Program interrupted by user. Stopping..')
-                print 'program interrupted by user. Stopping..'
+    def get_publish_rate(self):
+        return self.publish_rate
+
+    def get_channel(self):
+        return self.channel
+
+    def get_exchange(self):
+        return self.exchange_name
+
+    def get_routing_key(self):
+        return self.routing_key
+
+    def get_message_body(self):
+        return self.message_payload
+
+    def get_message_properties(self):
+        return self.properties
 
     def close_connection(self):
         if self.connection:
+            LOG.info('Closing connection to RabbitMQ.')
             self.connection.close()
-            LOG.info('Connection to RabbitMQ is closed.')
         else:
             LOG.warning('No connection to close.')
-
-
-            # class infinite_pablish(Thread):
-            #     def run(self):
-
 

@@ -14,20 +14,46 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import osnoise.config as config
-import osnoise.logger as logging
-import osnoise.messaging as messaging
+import osnoise.common.config as config
+import osnoise.common.logger as logging
+import osnoise.core.messaging as messaging
+import osnoise.core.publisher as publisher
 
-if __name__ == "__main__":
+import uuid
+import sys
+
+def main():
+    print 'Starting..'
+
+    global LOG
+
     try:
+        # init config
         CONF = config.init_config()
+
+        # init main log
         LOG = logging.getLogger(__name__)
-        LOG.info('Starting..')
-        print 'Starting..'
-        publisher = messaging.BasicPublisher(CONF)
-        publisher.start_publishing()
+        LOG.info('Start OSNoise')
+
+        # init messaging config
+        MSG = messaging.BasicMessaging(CONF)
+
+        # init publisher and start publish
+        PUB = publisher.Publisher(pub_id=uuid.uuid4(),
+                                  duration=MSG.get_duration(),
+                                  publish_rate=MSG.get_publish_rate(),
+                                  channel=MSG.get_channel(),
+                                  exchange=MSG.get_exchange(),
+                                  routing_key=MSG.get_routing_key(),
+                                  body=MSG.get_message_body(),
+                                  properties=MSG.get_message_properties()
+                                  )
+        PUB.do_publish()
+
     except KeyboardInterrupt:
         LOG.info('Program interrupted by user. Stopping..')
-        print 'Program interrupted by user.'
+        LOG.debug('Stop OSNoise')
         print 'Stopping..'
-        publisher.close_connection()
+
+if __name__ == "__main__":
+    main()

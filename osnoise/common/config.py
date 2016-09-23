@@ -19,7 +19,6 @@
 
 import os
 import logging as py_logging
-from oslo_log import log as os_logging
 import logging.handlers
 from osnoise import conf
 
