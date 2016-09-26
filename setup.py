@@ -2,8 +2,8 @@ from distutils.core import setup
 from setuptools import find_packages
 
 setup(
-    name='OSNoise',
-    version='0.0.1dev',
+    name='osnoise',
+    version='0.0.1dev0',
     description='OpenStack compute agents (nova_cpu and neutron_l2agt) tcp '
                 'connection loader.',
 
@@ -24,10 +24,4 @@ setup(
     packages=find_packages(exclude=['osnoise.test',]),
 
     install_requires=['oslo.config', 'pika'],
-    entry_points={
-        'console_script': [
-            'osnoise.conf=osnoise.conf.opts:list_opts',
-            'osnoise=osnoise.main:main'
-        ],
-    },
 )

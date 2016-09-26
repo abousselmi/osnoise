@@ -17,12 +17,13 @@ class Publisher(object):
     """The publisher class"""
 
     def __init__(self, pub_id=None, duration=None, publish_rate=None,
-                 channel=None, exchange=None, routing_key=None, body=None,
-                 properties=None):
+                 connection=None, channel=None, exchange=None,
+                 routing_key=None, body=None, properties=None):
         self._stop = threading.Event()
         self.pub_id = pub_id
         self.duration = duration
         self.publish_rate = publish_rate
+        self.connection = connection
         self.channel = channel
         self.exchange_name = exchange
         self.routing_key = routing_key
@@ -70,11 +71,26 @@ class Publisher(object):
                                            )
                 message_count += 1
                 current_time = int(round(time.time() * 1000))
-                LOG.debug('[PUB] %s' %self.message_payload)
+                LOG.debug('[message %s] Published to: %s' %(message_count,
+                                                            self.exchange_name))
             LOG.info('Total messages %s' %(message_count-1))
         except IOError as ex:
             LOG.error('I/O error({0}): {1}'.format(ex.errno, ex.strerror))
+        except KeyboardInterrupt:
+            LOG.info('Program interrupted by user. Stopping..')
+            LOG.debug('Stop OSNoise')
+            print 'Stopping..'
+        finally:
+            self._do_stop()
 
-    def do_stop(self):
+    def _do_stop(self):
         LOG.debug('Stop publishing..')
+        self._close_connection()
         self._stop.set()
+
+    def _close_connection(self):
+        if self.connection:
+            LOG.info('Closing connection to RabbitMQ.')
+            self.connection.close()
+        else:
+            LOG.warning('No connection to close.')

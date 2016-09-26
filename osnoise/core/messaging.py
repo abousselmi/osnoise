@@ -125,6 +125,9 @@ class BasicMessaging(object):
     def get_publish_rate(self):
         return self.publish_rate
 
+    def get_connection(self):
+        return self.connection
+
     def get_channel(self):
         return self.channel
 
@@ -139,11 +142,4 @@ class BasicMessaging(object):
 
     def get_message_properties(self):
         return self.properties
-
-    def close_connection(self):
-        if self.connection:
-            LOG.info('Closing connection to RabbitMQ.')
-            self.connection.close()
-        else:
-            LOG.warning('No connection to close.')
 

@@ -1,0 +1,13 @@
+Babel==2.3.4
+debtcollector==1.8.0
+funcsigs==1.0.2
+netaddr==0.7.18
+oslo.config==3.17.0
+oslo.i18n==3.9.0
+pbr==1.10.0
+pika==0.10.0
+pytz==2016.6.1
+rfc3986==0.4.1
+six==1.10.0
+stevedore==1.17.1
+wrapt==1.10.8

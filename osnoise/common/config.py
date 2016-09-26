@@ -97,6 +97,11 @@ class ColorRotatingFileHandler(logging.handlers.RotatingFileHandler):
         return logging.StreamHandler.format(self, record)
 
 
+def update_conf_dir(confdir=None):
+    global DEFAULT_CONFIG_DIR
+    if confdir:
+        DEFAULT_CONFIG_DIR = confdir
+
 def init_config():
     # initialize the config system
     conf_file = _get_config_file()
