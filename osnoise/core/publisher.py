@@ -17,17 +17,17 @@
 from osnoise.common import logger as logging
 import threading
 import time
-import sys
 
 LOG = logging.getLogger(__name__)
 
 
 def do_thread(function):
     def wrapper(*args, **kwargs):
-        threading.Thread(target=function, args=args, kwargs=kwargs).start()
-        # Daemonizing the thread makes it slow for unkown reason.
-        # t.daemon = True
-        # t.start()
+        t = threading.Thread(target=function, args=args, kwargs=kwargs)
+        # Not daemonizing the thread makes publication slow. When try to
+        # publish too much messages, the rate will decrease eventually..
+        t.daemon = True
+        t.start()
     return wrapper
 
 class Publisher(object):
@@ -87,7 +87,7 @@ class Publisher(object):
                 #keep up with the publish rate
                 self._delay_publish(message_count=message_count,
                                     interval=interval)
-                #publish
+                #publish a message
                 self.channel.basic_publish(exchange=self.exchange_name,
                                            routing_key=self.routing_key,
                                            body=self.message_payload,
@@ -109,7 +109,6 @@ class Publisher(object):
     def _do_stop(self):
         self._run_event.clear()
         self._close_connection()
-        sys.exit(0)
 
 
     def _close_connection(self):
