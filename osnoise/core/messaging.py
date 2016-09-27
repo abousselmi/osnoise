@@ -31,7 +31,7 @@ class BasicMessaging(object):
 
     def __init__(self, conf):
         # rabbitmq config options
-        LOG.debug('Loading messaging configuration.')
+        LOG.info('Loading messaging configuration..')
         if conf.rabbit_conf.rabbit_transport:
             self.rabbitTransport   = conf.rabbit_conf.rabbit_transport
 
@@ -89,7 +89,7 @@ class BasicMessaging(object):
         self._init_messaging()
 
     def _init_messaging(self):
-        LOG.debug('Initializing connection to rabbitmq node.')
+        LOG.info('Initializing connection to rabbitmq node..')
         #construct credentials
         credentials = pika_credentials.PlainCredentials(
             username=self.rabbitUID,
@@ -110,6 +110,11 @@ class BasicMessaging(object):
         )
         self.connection = pika.BlockingConnection(parameters=parameters)
         self.channel = self.connection.channel()
+        self.channel.confirm_delivery()
+        # self.channel.basic_qos(prefetch_size=0,
+        #                        prefetch_count=0,
+        #                        all_channels=False
+        #                        )
         self.channel.exchange_declare(exchange=self.exchange_name,
                                       exchange_type=self.exchange_type,
                                       passive=self.is_passive,

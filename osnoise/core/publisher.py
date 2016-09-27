@@ -1,8 +1,23 @@
+#!/usr/bin/env python
 
-from osnoise.core import messaging
+# Copyright 2016 Orange
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 from osnoise.common import logger as logging
 import threading
 import time
+import sys
 
 LOG = logging.getLogger(__name__)
 
@@ -10,7 +25,9 @@ LOG = logging.getLogger(__name__)
 def do_thread(function):
     def wrapper(*args, **kwargs):
         threading.Thread(target=function, args=args, kwargs=kwargs).start()
-
+        # Daemonizing the thread makes it slow for unkown reason.
+        # t.daemon = True
+        # t.start()
     return wrapper
 
 class Publisher(object):
@@ -19,18 +36,31 @@ class Publisher(object):
     def __init__(self, pub_id=None, duration=None, publish_rate=None,
                  connection=None, channel=None, exchange=None,
                  routing_key=None, body=None, properties=None):
-        self._stop = threading.Event()
-        self.pub_id = pub_id
-        self.duration = duration
-        self.publish_rate = publish_rate
-        self.connection = connection
-        self.channel = channel
-        self.exchange_name = exchange
-        self.routing_key = routing_key
-        self.message_payload = body
+        # init stop event
+        self._run_event = threading.Event()
+        self._run_event.set()
+
+        # init publisher args
+        self.pub_id             = pub_id
+        self.duration           = duration
+        self.publish_rate       = publish_rate
+        self.connection         = connection
+        self.channel            = channel
+        self.exchange_name      = exchange
+        self.routing_key        = routing_key
+        self.message_payload    = body
         self.message_properties = properties
 
+        # init clock thread interval
         self.interval = 0
+
+    @do_thread
+    def _update_interval(self, current_time):
+        while self._run_event.is_set():
+            #time.sleep(1)
+            if current_time - self.interval >= 1000:
+                # add new one second interval
+                self.interval += 1000
 
     def _delay_publish(self, message_count, interval):
         elapsed_time = int(round(time.time() * 1000)) - interval
@@ -41,25 +71,19 @@ class Publisher(object):
             try:
                 time.sleep(pause_time/1000)
             except Exception:
-                LOG.error('Caught exception when trying to sleep.')
-
-    @do_thread
-    def _update_interval(self, current_time):
-        while True:
-            if current_time - self.interval >= 1000:
-                # new one second interval
-                self.interval += 1000
+                LOG.error('Caught exception when trying to sleep..')
 
     @do_thread
     def do_publish(self):
-        LOG.debug('Start publishing..')
+        LOG.info('Start publishing..')
         start_time = current_time = interval = int(round(time.time() * 1000))
         self.interval = interval
         message_count = 0
 
         try:
-            while (self.duration == 0 or current_time <
-                    start_time + self.duration*1000):
+            while (self._run_event.is_set() and
+                       (self.duration == 0 or current_time < start_time +
+                               self.duration*1000)):
                 #keep up with the publish rate
                 self._delay_publish(message_count=message_count,
                                     interval=interval)
@@ -74,23 +98,29 @@ class Publisher(object):
                 LOG.debug('[message %s] Published to: %s' %(message_count,
                                                             self.exchange_name))
             LOG.info('Total messages %s' %(message_count-1))
+            self._do_stop()
         except IOError as ex:
             LOG.error('I/O error({0}): {1}'.format(ex.errno, ex.strerror))
-        except KeyboardInterrupt:
-            LOG.info('Program interrupted by user. Stopping..')
-            LOG.debug('Stop OSNoise')
-            print 'Stopping..'
+            self._do_stop()
         finally:
+            LOG.info('Stop publishing..')
             self._do_stop()
 
     def _do_stop(self):
-        LOG.debug('Stop publishing..')
+        self._run_event.clear()
         self._close_connection()
-        self._stop.set()
+        sys.exit(0)
+
 
     def _close_connection(self):
-        if self.connection:
-            LOG.info('Closing connection to RabbitMQ.')
-            self.connection.close()
+        if not self.channel.is_closed:
+            LOG.debug('Closing channel..')
+            self.channel.close(reply_code=200, reply_text='Normal shutdown')
         else:
-            LOG.warning('No connection to close.')
+            LOG.debug('Channel is already closed..')
+        if not self.connection.is_closed:
+            LOG.debug('Closing connection..')
+            self.connection.close(reply_code=200, reply_text='Normal shutdown')
+        else:
+            LOG.debug('Connection is already closed..')
+        LOG.info('Connection to RabbitMQ is closed..')

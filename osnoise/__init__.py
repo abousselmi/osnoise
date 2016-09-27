@@ -16,4 +16,4 @@
 
 __version__ = '0.0.1dev0'
 
-from osnoise.start import OSNoise
+from osnoise.generator import OSNoise

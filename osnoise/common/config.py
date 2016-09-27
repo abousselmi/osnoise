@@ -78,7 +78,7 @@ def _init_logger(conf):
     #turn on the capture of warnings by logging
     logging.captureWarnings(True)
 
-    LOG.debug('logging system is up.')
+    LOG.info('Logging system is up..')
 
 class ColorRotatingFileHandler(logging.handlers.RotatingFileHandler):
 
