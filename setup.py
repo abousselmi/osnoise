@@ -17,15 +17,21 @@
 from distutils.core import setup
 from setuptools import find_packages
 
+with open('README.md') as f:
+    readme = f.read()
+
+with open('LICENCE.txt') as f:
+    license = f.read()
+
 setup(
     name='osnoise',
     version='0.0.1dev0',
     description='OpenStack compute agents (nova_cpu and neutron_l2agt) tcp '
                 'connection loader.',
+    long_description=readme,
+    author='Ayoub Bousselmi',
 
-    author='Ayoub BOUSSELMI',
-
-    license='Apache Software License',
+    license=license,
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
