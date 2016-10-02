@@ -30,6 +30,7 @@ def do_thread(function):
         t.start()
     return wrapper
 
+
 class Publisher(object):
     """The publisher class"""
 
@@ -41,14 +42,14 @@ class Publisher(object):
         self._run_event.set()
 
         # init publisher args
-        self.pub_id             = pub_id
-        self.duration           = duration
-        self.publish_rate       = publish_rate
-        self.connection         = connection
-        self.channel            = channel
-        self.exchange_name      = exchange
-        self.routing_key        = routing_key
-        self.message_payload    = body
+        self.pub_id = pub_id
+        self.duration = duration
+        self.publish_rate = publish_rate
+        self.connection = connection
+        self.channel = channel
+        self.exchange_name = exchange
+        self.routing_key = routing_key
+        self.message_payload = body
         self.message_properties = properties
 
         # init clock thread interval
@@ -57,7 +58,7 @@ class Publisher(object):
     @do_thread
     def _update_interval(self, current_time):
         while self._run_event.is_set():
-            #time.sleep(1)
+            # time.sleep(1)
             if current_time - self.interval >= 1000:
                 # add new one second interval
                 self.interval += 1000
@@ -82,12 +83,13 @@ class Publisher(object):
 
         try:
             while (self._run_event.is_set() and
-                       (self.duration == 0 or current_time < start_time +
-                               self.duration*1000)):
-                #keep up with the publish rate
+                   (self.duration == 0 or current_time < start_time +
+                    self.duration*1000)
+                   ):
+                # keep up with the publish rate
                 self._delay_publish(message_count=message_count,
                                     interval=interval)
-                #publish a message
+                # publish a message
                 self.channel.basic_publish(exchange=self.exchange_name,
                                            routing_key=self.routing_key,
                                            body=self.message_payload,
@@ -109,7 +111,6 @@ class Publisher(object):
     def _do_stop(self):
         self._run_event.clear()
         self._close_connection()
-
 
     def _close_connection(self):
         if not self.channel.is_closed:

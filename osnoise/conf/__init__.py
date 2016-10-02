@@ -18,6 +18,7 @@ from osnoise.conf import base
 from osnoise.conf import dummy
 from osnoise.conf import paths
 from osnoise.conf import rabbit
+from osnoise.conf import tsunami
 
 
 CONF = cfg.CONF
@@ -27,3 +28,4 @@ base.register_opts(CONF)
 dummy.register_opts(CONF)
 rabbit.register_opts(CONF)
 paths.register_opts(CONF)
+tsunami.register_opts(CONF)

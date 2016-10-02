@@ -27,53 +27,53 @@ LOG = logging.getLogger(__name__)
 
 
 class BasicMessaging(object):
-    """Configures a rabbitmq client to publish dummy messages"""
+    """Configures a rabbitmq client to publish dummy messages."""
 
     def __init__(self, conf):
         # rabbitmq config options
         LOG.info('Loading messaging configuration..')
         if conf.rabbit_conf.rabbit_transport:
-            self.rabbitTransport   = conf.rabbit_conf.rabbit_transport
+            self.rabbitTransport = conf.rabbit_conf.rabbit_transport
 
-        self.rabbitUID          = conf.rabbit_conf.rabbit_userid
-        self.rabbitPass         = conf.rabbit_conf.rabbit_password
-        self.rabbitHost         = conf.rabbit_conf.rabbit_host
-        self.rabbitPort         = conf.rabbit_conf.rabbit_port
-        self.rabbitVHost        = conf.rabbit_conf.rabbit_virtual_host
-        self.rabbitHosts        = conf.rabbit_conf.rabbit_hosts
-        self.rabbitUseSSL       = conf.rabbit_conf.rabbit_use_ssl
-        self.rabbitLoginMethod  = conf.rabbit_conf.rabbit_login_method
+        self.rabbitUID = conf.rabbit_conf.rabbit_userid
+        self.rabbitPass = conf.rabbit_conf.rabbit_password
+        self.rabbitHost = conf.rabbit_conf.rabbit_host
+        self.rabbitPort = conf.rabbit_conf.rabbit_port
+        self.rabbitVHost = conf.rabbit_conf.rabbit_virtual_host
+        self.rabbitHosts = conf.rabbit_conf.rabbit_hosts
+        self.rabbitUseSSL = conf.rabbit_conf.rabbit_use_ssl
+        self.rabbitLoginMethod = conf.rabbit_conf.rabbit_login_method
 
-        #pika config options
-        self.channel_max        = conf.rabbit_conf.pika_channel_max
-        self.frame_max          = conf.rabbit_conf.pika_frame_max
-        self.heartbeat_rate     = conf.rabbit_conf.heartbeat_rate
+        # pika config options
+        self.channel_max = conf.rabbit_conf.pika_channel_max
+        self.frame_max = conf.rabbit_conf.pika_frame_max
+        self.heartbeat_rate = conf.rabbit_conf.heartbeat_rate
         self.connection_attemps = conf.rabbit_conf.rabbit_max_retries
-        self.retry_delay        = conf.rabbit_conf.rabbit_retry_interval
-        self.socket_timeout     = conf.rabbit_conf.pika_socket_timeout
-        self.pika_locale        = conf.rabbit_conf.pika_set_locale
+        self.retry_delay = conf.rabbit_conf.rabbit_retry_interval
+        self.socket_timeout = conf.rabbit_conf.pika_socket_timeout
+        self.pika_locale = conf.rabbit_conf.pika_set_locale
 
         # message publisher config options
-        self.exchange_name      = conf.dummy_conf.exchange_name
-        self.exchange_type      = conf.dummy_conf.exchange_type
-        self.is_passive         = conf.dummy_conf.is_passive
-        self.is_durable         = conf.dummy_conf.is_durable
-        self.is_auto_delete     = conf.dummy_conf.is_auto_delete
-        self.is_internal        = conf.dummy_conf.is_internal
-        self.arguments          = conf.dummy_conf.arguments
-        self.routing_key        = conf.dummy_conf.routing_key
-        self.message_payload    = conf.dummy_conf.message_payload
+        self.exchange_name = conf.dummy_conf.exchange_name
+        self.exchange_type = conf.dummy_conf.exchange_type
+        self.is_passive = conf.dummy_conf.is_passive
+        self.is_durable = conf.dummy_conf.is_durable
+        self.is_auto_delete = conf.dummy_conf.is_auto_delete
+        self.is_internal = conf.dummy_conf.is_internal
+        self.arguments = conf.dummy_conf.arguments
+        self.routing_key = conf.dummy_conf.routing_key
+        self.message_payload = conf.dummy_conf.message_payload
 
-        self.publish_rate       = conf.dummy_conf.publish_rate
-        self.noise_dureation    = conf.dummy_conf.duration
+        self.publish_rate = conf.dummy_conf.publish_rate
+        self.noise_duration = conf.dummy_conf.duration
 
-        content_type       = conf.dummy_conf.message_type
-        content_encoding   = conf.dummy_conf.message_encoding
-        priority           = conf.dummy_conf.priority
-        delivery_mode      = conf.dummy_conf.delivery_mode
-        user_id            = self.rabbitUID
-        app_id             = cfg.PRODUCT_NAME
-        message_id         = app_id+'_message'
+        content_type = conf.dummy_conf.message_type
+        content_encoding = conf.dummy_conf.message_encoding
+        priority = conf.dummy_conf.priority
+        delivery_mode = conf.dummy_conf.delivery_mode
+        user_id = self.rabbitUID
+        app_id = cfg.PRODUCT_NAME
+        message_id = app_id+'_message'
 
         self.properties = pika.spec.BasicProperties(
             content_type=content_type,
@@ -85,12 +85,14 @@ class BasicMessaging(object):
             message_id=message_id
         )
 
-        #init connection
+        self.tsunami_message_count = conf.tsunami_conf.tsunami_message_count
+
+        # init connection
         self._init_messaging()
 
     def _init_messaging(self):
         LOG.info('Initializing connection to rabbitmq node..')
-        #construct credentials
+        # construct credentials
         credentials = pika_credentials.PlainCredentials(
             username=self.rabbitUID,
             password=self.rabbitPass
@@ -125,7 +127,7 @@ class BasicMessaging(object):
                                       )
 
     def get_duration(self):
-        return self.noise_dureation
+        return self.noise_duration
 
     def get_publish_rate(self):
         return self.publish_rate
@@ -148,3 +150,6 @@ class BasicMessaging(object):
     def get_message_properties(self):
         return self.properties
 
+    # tsunami variable
+    def get_tsunami_message_count(self):
+        return self.tsunami_message_count

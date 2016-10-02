@@ -14,7 +14,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-__version__ = '0.0.1dev0'
+import osnoise.common.config as config
+import osnoise.conf.opts as opts
 
-from osnoise.generator import OSNoise
-from osnoise.tsunami.wave import Wave
+
+class ConfigBase(object):
+    """The configuration class."""
+
+    def __init__(self, confdir=None):
+        if confdir:
+            config.update_conf_dir(confdir=confdir)
+
+        # init config
+        self.conf = config.init_config()
+        opts.list_opts()
+
+    def get_conf(self):
+        return self.conf

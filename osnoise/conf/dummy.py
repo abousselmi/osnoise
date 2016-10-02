@@ -15,15 +15,15 @@
 from oslo_config import cfg
 
 dummy_section = cfg.OptGroup('dummy_conf',
-                                      title='OpenStack compute agents\' '
-                                            'messaging options',
-                                      help='Configuration options of '
-                                           'the compute node agents\' RPC '
-                                           'flows.')
+                             title='OpenStack compute agents\' '
+                                   'messaging options',
+                             help='Configuration options of '
+                                  'the compute node agents\' RPC '
+                                  'flows.')
 
 
 dummy_options = [
-    #exchange general properties
+    # exchange general properties
     cfg.StrOpt(
         'exchange_name',
         default='reply_q',
@@ -33,7 +33,7 @@ dummy_options = [
         default='direct',
         help='Agent reply exchange type.'),
 
-    #exchange specific properties
+    # exchange specific properties
     cfg.BoolOpt(
         'is_passive',
         default=False,
@@ -55,7 +55,7 @@ dummy_options = [
         default=None,
         help='Exchange arguments.'),
 
-    #message properties
+    # message properties
     cfg.StrOpt(
         'routing_key',
         default='reply_q',
@@ -65,7 +65,7 @@ dummy_options = [
         default='payload',
         help='Agent reply message payload.'),
 
-    #publisher properties
+    # publisher properties
     cfg.FloatOpt(
         'publish_rate',
         default=2,

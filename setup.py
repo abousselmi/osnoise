@@ -25,7 +25,7 @@ with open('LICENCE.txt') as f:
 
 setup(
     name='osnoise',
-    version='0.0.1dev0',
+    version='0.0.2dev0',
     description='OpenStack compute agents (nova_cpu and neutron_l2agt) tcp '
                 'connection loader.',
     long_description=readme,

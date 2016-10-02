@@ -21,11 +21,11 @@ rabbitmq_section = cfg.OptGroup('rabbit_conf',
 
 
 rabbit_options = [
-    #rabbit config
+    # rabbit config
     cfg.StrOpt('rabbit_transport',
                default='amqp://guest:guest@localhost:5672//',
                help='The RabbitMQ transport URL.'),
-    #deprecated options in oslo_messaging
+    # deprecated options in oslo_messaging
     cfg.StrOpt('rabbit_host',
                default='localhost',
                deprecated_group='DEFAULT',
@@ -58,14 +58,14 @@ rabbit_options = [
                deprecated_reason="Replaced by [DEFAULT]/transport_url",
                help='The RabbitMQ password.',
                secret=True),
-    #pika config
+    # pika config
     cfg.IntOpt('pika_channel_max',
                default=1,
                help='Maximum number of channels.'),
     cfg.IntOpt('pika_frame_max',
                default=131072,
                help='Maximum byte size for an AMQP frame.'),
-    #rabbit config
+    # rabbit config
     cfg.IntOpt('heartbeat_rate',
                default=2,
                help='How often times we check the heartbeat.'),
@@ -73,11 +73,11 @@ rabbit_options = [
                 default=False,
                 deprecated_group='DEFAULT',
                 help='Connect over SSL for RabbitMQ.'),
-    #pika config
+    # pika config
     cfg.DictOpt('pika_ssl_options',
                 default = {},
                 help = 'Connect over SSL for RabbitMQ.'),
-    #rabbit config
+    # rabbit config
     cfg.IntOpt('rabbit_max_retries',
                default=None,
                deprecated_for_removal=True,
@@ -87,7 +87,7 @@ rabbit_options = [
     cfg.IntOpt('rabbit_retry_interval',
                default=1,
                help='How frequently to retry connecting with RabbitMQ.'),
-    #pika config
+    # pika config
     cfg.IntOpt('pika_socket_timeout',
                default=10,
                help='Socket timeout to use for high latency networks.'),
@@ -95,7 +95,7 @@ rabbit_options = [
                default='en_US.UTF-8',
                help='Socket timeout to use for high latency networks.'),
 
-    #addtional rabbit config options
+    # addtional rabbit config options
     cfg.ListOpt('rabbit_hosts',
                 default=['$rabbit_host:$rabbit_port'],
                 deprecated_group='DEFAULT',
@@ -106,7 +106,6 @@ rabbit_options = [
                default='AMQPLAIN',
                deprecated_group='DEFAULT',
                help='The RabbitMQ login method.'),
-
 ]
 
 
