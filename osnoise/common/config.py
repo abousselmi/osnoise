@@ -76,7 +76,7 @@ def _init_logger(conf):
     LOG.addHandler(log_handler)
 
     #turn on the capture of warnings by logging
-    logging.captureWarnings(True)
+    py_logging.captureWarnings(True)
 
     LOG.info('Logging system is up..')
 
